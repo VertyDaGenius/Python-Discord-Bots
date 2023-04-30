@@ -25,15 +25,17 @@
 # https://discord.com/invite/M7dG7Kp3Vy
 #----------------------------------------------------
 
-#imports
+# IGNORE ANY ERRORS!!
+# UNLESS IF IT LITERALLY DOESN'T WORK
 
+#imports
 import discord
 from discord.ext import commands
 import random
 from colorama import Fore
+import asyncio
 
 #connection
-
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
@@ -47,45 +49,85 @@ async def on_ready():
         print(Fore.RED + 'Bot failed to connect!')
 
 
-
-#game
-
+#game       
+current_games = {}
 @bot.event
 async def on_message(message):
+    if message.content.startswith('!exitgg'):
+        if message.author.id in current_games:
+            number = current_games[message.author.id]
+            del current_games[message.author.id]
+            reply1 = await message.channel.send(f"HAWHAHWHAW {message.author.mention}, YOU QUIT!!! THE NUMBER WAS {number}")
+            await asyncio.sleep(3)
+            await message.delete()
+            await reply1.delete()
+            
+            async for m in message.channel.history(limit=5):
+                if m.author == message.author or m.author == bot.user:
+                    await m.delete(delay=1.5)
+        else:
+            reply = await message.channel.send(f"UR NOT IN A GAME! USE THE COMMAND !guessgame TO START ONE!!!.")
+            await asyncio.sleep(3)
+            await message.delete()
+            await reply.delete()
+        return
+
     if message.content.startswith('!guessgame'):
+        if message.author.id in current_games:
+            await message.channel.send("NICE TRY BUCKAROO YOU CAN ONLY PLAY ONE GAME AT A TIME!!!")
+            return
+
         if message.channel.id != replace with your channel id:
-            await message.channel.send("THIS COMMAND ONLY WORKS IN THE CHANNEL #guessgame-vertbot STUPID!")
+            await message.channel.send("THIS COMMAND ONLY WORKS IN THE #guessgame-vertbot CHANNEL! IDIOT!")
             return
 
         number = random.randint(1, 50)
         guess_count = 0
         guess_limit = 10
-        await message.channel.send("MY NUMBER IS BETWEEN 1 AND 50! WOOFWOOFWOOFOWOFOFOF!")
+        guesser = message.author
+        current_games[guesser.id] = number
+
+        msg = await message.channel.send(f"MY NUMBER IS BETWEEN 1 AND 50! BAWRKBAWRK!! {guesser.mention}")
+        
+        def check(m):
+            return m.author == guesser and m.content.isdigit()
+
         while guess_count < guess_limit:
             try:
-                guess = await bot.wait_for('message', timeout=30.0)
-                if guess.content.startswith('!exitgg'):
-                    await message.channel.send(f'HAHAHAHA U QUIT! THE NUMBER WAS {number}')
-                    return
-                guess = int(guess.content)
+                guess_msg = await bot.wait_for('message', check=check, timeout=15.0)
+                guess = int(guess_msg.content)
+                await guess_msg.delete(delay=1.5)
             except asyncio.TimeoutError:
-                await message.channel.send("YOU TOOK TOO LONG! >:(!")
-                return
+                await msg.edit(content=f"YOU TOOK TO LONG! GAME OVER!! THE NUMBER WAS {number}, {guesser.mention}")
+                break
             except:
-                await message.channel.send("ENTER A NUMBER, NOTHING ELSE!!! WOOF WOOF!")
+                await message.channel.send(f"ENTER A NUMBER, NOTHING ELSE!!!! BAWRK BAWRK {guesser.mention}")
                 continue
-            if guess < number:
-                await message.channel.send("MY NUMBER IS GREATER! BAWRK BAWRK")
-            elif guess > number:
-                await message.channel.send("MY NUMBER IS LOWER! BAWRK BAWRK")
-            else:
-                await message.channel.send(f"YAYYYY {message.author.mention}! YOU GUESSED IT CORRECTLY! :3 ({number})!")
-                return
             guess_count += 1
-        await message.channel.send(f"U ran out of guesses :( the number was {number}. BAWRK")
+            if guess == number:
+                await msg.edit(content=f"BAWRK!! {guesser.mention}, YOU WIN!!! THE NUMBER WAS {number}")
+                break
+            else:
+                await msg.edit(content=f"MY NUMBER IS {'GREATER' if guess < number else 'LOWER'}! BAWRK BAWRK ({guess_count}) (you guessed {guess}) {guesser.mention}")
+        
+        if guesser.id in current_games:
+            del current_games[guesser.id]
 
+        async for m in message.channel.history(limit=30):
+            if m.author == bot.user:
+                if m.content.startswith(("MY NUMBER IS", "BAWRK!!", "ENTER A NUMBER, NOTHING ELSE", "YOU TOOK TOO LONG", "UR NOT IN A GAME", "NICE TRY BUCKAROO", "THIS COMMAND ONLY WORKS IN", "HAWHAHWHAW", "UR NOT IN A GAME!")):
+                    try:
+                        await asyncio.sleep(3)
+                        await m.delete()
+                    except discord.errors.NotFound:
+                        pass
+            elif m.author == guesser:
+                try:
+                    await asyncio.sleep(1.5)
+                    await m.delete()
+                except discord.errors.NotFound:
+                    pass
 
 # connect the bot
-
 if __name__ == '__main__':
     bot.run('---') #replace with your bots token
