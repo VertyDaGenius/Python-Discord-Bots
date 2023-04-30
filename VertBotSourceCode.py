@@ -1,4 +1,3 @@
-
 # the "if p_message == 'hello vert':" is a "command" in any channel
 # the response = '' is what the bot responds to the command
 
