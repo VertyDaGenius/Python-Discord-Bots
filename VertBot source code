@@ -1,3 +1,30 @@
+
+# the "if p_message == 'hello vert':" is a "command" in any channel
+# the response = '' is what the bot responds to the command
+
+# example: 
+# (in the chat the user says) 
+# hello vert
+# (then the bot replys with
+# HELLO!! BAWRK BAWRK BAWRK! CHECK OUT MY COMMANDS IN THE VERTBOT COMMANDS CHANNEL
+#----------------------------------------------------
+# in any channel too you can type in !ping <ip address>
+# so then using socket the bot pings the ip address and replys with if its up or down
+#----------------------------------------------------
+# example: 
+# (the user says)
+# ping 8.8.8.8
+# (then the bot replys with)
+# 8.8.8.8 IS UP! WOOF WOOF! <then tags the user>
+#----------------------------------------------------
+# if you need help with setting up your first bot check out the readme file
+# if you still ahve issues contact my discord or join my server for help:
+#----------------------------------------------------
+# WhoIsVerty#0383
+# https://discord.com/invite/M7dG7Kp3Vy
+#----------------------------------------------------
+
+#imports
 import discord
 from discord.ext import commands
 import random
