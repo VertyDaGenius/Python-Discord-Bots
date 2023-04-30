@@ -17,6 +17,8 @@
 # it should tell you that it selected a random number between 1-50
 # in the chat of the same channel type in a number between 1-50, you have 10 tries to get it correct
 # to make it easier the bot tells you if your number is greater or less than the selected number
+# if you want to exit the game in the chat type in !exitgg 
+# then the bot should exit the game and tell you what the number was
 # if you want any help contact my discord or join my server
 #----------------------------------------------------
 # WhoIsVerty#0383
