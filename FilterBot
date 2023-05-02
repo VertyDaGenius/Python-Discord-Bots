@@ -1,0 +1,53 @@
+import discord
+from discord.ext import commands
+import asyncio
+
+
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    try:
+        print(f'{bot.user.name} has connected to Discord!')
+    except:
+        print('Bot failed to connect!')
+
+#mute command
+#DISCLAIMER - the bot will mute the user even if the message has it inside it, example:
+#if the filter word was "lol" and the user said this "qwertyuiopLOLqwertyuiop" they will be kicked,
+#this script still works even if they type it in all lowercase or uppercase or any case.
+
+#if you want a bot that can ban someone just let me know on discord (read the readme file for my discord and how to setup a bot.)
+
+@bot.event
+async def on_message(message):
+    if "<replace with filter word>" in message.content.lower(): 
+        user = message.author
+        await message.delete()
+        await message.author.send(f"Please Refrain From Using Slurs {user.mention}, you have been muted for 5 minutes.")
+        await message.channel.send(f"Please Refrain From Using Slurs {user.mention}, you have been muted for 5 minutes.")
+        await message.channel.set_permissions(message.author, send_messages=False, read_messages=True)
+        await asyncio.sleep(300)
+        await message.channel.set_permissions(message.author, send_messages=True, read_messages=True)
+
+
+'''
+#unmute command
+@bot.command()
+@commands.has_role("mod") #replace with role id or role name, both should work
+async def unmute(ctx, member: discord.Member):
+    guild = ctx.guild
+    for channel in guild.channels:
+        await channel.set_permissions(member, send_messages=True, read_messages=True)
+    await ctx.send(f"{member.mention} has been unmuted.")
+'''
+
+
+
+if __name__ == '__main__':
+    bot.run('---') #replace with bot token
+        
+        
